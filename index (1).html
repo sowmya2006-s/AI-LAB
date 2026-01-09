@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Interactive BFS vs DFS Maze Pathfinding Visualizer - Compare breadth-first and depth-first search algorithms with stunning animations">
+    <meta name="keywords" content="BFS, DFS, pathfinding, algorithm visualization, maze solver">
+    <title>BFS vs DFS Maze Visualizer | Algorithm Comparison Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">
+                <span class="gradient-text">Pathfinding Visualizer</span>
+            </h1>
+            <p class="subtitle">Compare BFS & DFS Algorithms in Real-Time</p>
+        </header>
+
+        <!-- Control Panel -->
+        <section class="control-panel">
+            <div class="control-group">
+                <label for="algorithm-select" class="control-label">Algorithm Mode</label>
+                <select id="algorithm-select" class="select-input">
+                    <option value="both">Both (BFS vs DFS)</option>
+                    <option value="bfs">BFS Only</option>
+                    <option value="dfs">DFS Only</option>
+                    <option value="astar">A* Search (Heuristic)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="speed-slider" class="control-label">Speed: <span id="speed-value">50</span>ms</label>
+                <input type="range" id="speed-slider" class="slider" min="1" max="100" value="50">
+            </div>
+
+            <div class="control-group">
+                <label for="grid-size" class="control-label">Grid Size</label>
+                <select id="grid-size" class="select-input">
+                    <option value="20">20x20 (Small)</option>
+                    <option value="30" selected>30x30 (Medium)</option>
+                    <option value="40">40x40 (Large)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="maze-pattern" class="control-label">Maze Pattern</label>
+                <select id="maze-pattern" class="select-input">
+                    <option value="none">None (Empty)</option>
+                    <option value="random">Random Walls</option>
+                    <option value="recursive">Recursive Division</option>
+                    <option value="spiral">Spiral</option>
+                    <option value="cross">Cross Pattern</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button id="start-btn" class="btn btn-primary">
+                    <span class="btn-icon">▶</span> Start
+                </button>
+                <button id="pause-btn" class="btn btn-secondary" disabled>
+                    <span class="btn-icon">⏸</span> Pause
+                </button>
+                <button id="reset-btn" class="btn btn-secondary">
+                    <span class="btn-icon">↻</span> Reset
+                </button>
+                <button id="clear-path-btn" class="btn btn-tertiary">
+                    Clear Path
+                </button>
+                <button id="clear-walls-btn" class="btn btn-tertiary">
+                    Clear Walls
+                </button>
+                <button id="generate-maze-btn" class="btn btn-accent">
+                    Generate Maze
+                </button>
+            </div>
+        </section>
+
+        <!-- Legend -->
+        <section class="legend">
+            <div class="legend-item">
+                <div class="legend-box start"></div>
+                <span>Start</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box end"></div>
+                <span>End</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box wall"></div>
+                <span>Wall</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box visited-bfs"></div>
+                <span>BFS Visited</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box visited-dfs"></div>
+                <span>DFS Visited</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box path-bfs"></div>
+                <span>BFS Path</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box path-dfs"></div>
+                <span>DFS Path</span>
+            </div>
+        </section>
+
+        <!-- Visualization Area -->
+        <section class="visualization-area" id="visualization-area">
+            <!-- BFS / A* Grid -->
+            <div class="grid-container" id="bfs-container">
+                <div class="grid-header">
+                    <h2 class="grid-title bfs-gradient" id="bfs-grid-title">Breadth-First Search (BFS)</h2>
+                    <div class="stats" id="bfs-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Visited:</span>
+                            <span class="stat-value" id="bfs-visited">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Path Length:</span>
+                            <span class="stat-value" id="bfs-path-length">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Time:</span>
+                            <span class="stat-value" id="bfs-time">0ms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid" id="bfs-grid"></div>
+            </div>
+
+            <!-- DFS Grid -->
+            <div class="grid-container" id="dfs-container">
+                <div class="grid-header">
+                    <h2 class="grid-title dfs-gradient">Depth-First Search (DFS)</h2>
+                    <div class="stats" id="dfs-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Visited:</span>
+                            <span class="stat-value" id="dfs-visited">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Path Length:</span>
+                            <span class="stat-value" id="dfs-path-length">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Time:</span>
+                            <span class="stat-value" id="dfs-time">0ms</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid" id="dfs-grid"></div>
+            </div>
+        </section>
+
+        <!-- Instructions -->
+        <section class="instructions">
+            <h3>How to Use</h3>
+            <ul>
+                <li><strong>Click</strong> on grid cells to add/remove walls</li>
+                <li><strong>Drag</strong> the green (start) or red (end) nodes to reposition them</li>
+                <li><strong>Generate Maze</strong> to create random patterns</li>
+                <li><strong>Select Algorithm Mode</strong> to compare both or view individually</li>
+                <li><strong>Adjust Speed</strong> to control animation speed</li>
+                <li><strong>Press Start</strong> to watch the algorithms find the shortest path!</li>
+            </ul>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with ❤️ to visualize pathfinding algorithms | BFS uses Queue (FIFO) | DFS uses Stack (LIFO)</p>
+        </footer>
+    </div>
+
+    <script src="maze-generator.js"></script>
+    <script src="algorithms.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
